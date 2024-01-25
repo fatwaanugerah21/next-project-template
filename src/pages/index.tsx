@@ -35,14 +35,11 @@ const Homepage: React.FC<IHomepageProps> = ({}) => {
 
       <MainLayout>
         <Text size={"xl"} weight={"bold"}>
-          {t("example-text-to-be-translated")}
+          Input Nama Pemilih
         </Text>
 
         <Card withBorder mt={20}>
-          <Group grow>
-            Use Here
-            <Button>JKSC</Button>
-          </Group>
+          <Group grow></Group>
         </Card>
       </MainLayout>
     </>
