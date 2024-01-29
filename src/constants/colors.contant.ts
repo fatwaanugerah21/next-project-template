@@ -13,4 +13,16 @@ export const COLORS = {
   LIGHT: "#FFFFFF",
   BLACK_TEXT: "#404040",
   PRIMARY_BACKROUND: "#F3F7F2",
+
+  WHITE: "#FFFFFF",
+  primary: "#00AA5A",
+  secondary: "#F79D4E",
+  danger: "#FF2C56",
+  INPUT_DESCRIPTION: "#C7C9D9",
+  BLACK_TEXT2: "#222222",
+  grayText: "#BFBFBF",
+  backgroundPrimary: "#F3F7F2",
+  backgroundGray: "#F3F4F8",
+  dividerColor: "#DDE5E9",
+  BLUE: "#0D52BD",
 };

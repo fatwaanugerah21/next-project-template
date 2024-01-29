@@ -1,66 +1,46 @@
+import { Button, Card, Group, Stack, Title } from "@mantine/core";
+import Link from "next/link";
 import React from "react";
-import SEO from "../components/seo.component";
-import MainLayout from "../layouts/main.layout";
-import {
-  Button,
-  Card,
-  Flex,
-  Group,
-  Input,
-  Text,
-  TextInput,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { GetServerSideProps } from "next";
-import InputComponent from "../components/input.component";
-import FormComponent from "@/components/form.component";
 
 interface IHomepageProps {}
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { locale } = ctx;
-
-  return {
-    props: {
-      ...(await serverSideTranslations(locale!, ["common"])),
-    },
-  };
-};
-
-type FormValues = {
-  dptFile: File;
-};
-
 const Homepage: React.FC<IHomepageProps> = ({}) => {
-  const { t } = useTranslation();
-
-  const { getInputProps, onSubmit } = useForm<FormValues>({});
-
-  function handleSubmit(values: FormValues) {
-    console.log("values.dptFile: ", values.dptFile);
-  }
-
   return (
-    <>
-      <SEO title={"Price Simulator"} />
+    <Group align="center" position="center" bg={"gray"} mih={"100vh"}>
+      <Card>
+        <Title align="center" size={24}>
+          Program Check Data Pemilih
+        </Title>
 
-      <MainLayout>
-        <Text size={"xl"} weight={"bold"}>
-          Input Nama Pemilih
-        </Text>
-
-        <Card withBorder mt={20}>
-          <Group grow>
-            <FormComponent onSubmit={onSubmit(handleSubmit)}>
-              <Input {...getInputProps("dptFile")} type="file" />
-              <Button type="submit">Chek Data</Button>
-            </FormComponent>
-          </Group>
-        </Card>
-      </MainLayout>
-    </>
+        <Stack mt={24}>
+          <Link href={"/dpt"}>
+            <Button w={"100%"} mt={10} color="light">
+              Input Data DPT
+            </Button>
+          </Link>
+          <Link href={"/coordinators"}>
+            <Button w={"100%"} mt={10} color="light">
+              Input Data Koordinator Dan Penanggung Jawab
+            </Button>
+          </Link>
+          <Link href={"/voters"}>
+            <Button w={"100%"} mt={10} color="light">
+              Input Data Pemilih
+            </Button>
+          </Link>
+          <Link href={"/check-duplicate"}>
+            <Button w={"100%"} mt={10} color="light">
+              Check Duplikat
+            </Button>
+          </Link>
+          <Link href={"/check-list-voters"}>
+            <Button w={"100%"} mt={10} color="light">
+              Check Daftar Pemilih
+            </Button>
+          </Link>
+        </Stack>
+      </Card>
+    </Group>
   );
 };
 export default Homepage;
