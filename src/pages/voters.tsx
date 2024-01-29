@@ -45,6 +45,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
   useEffect(() => {
     refetchResponsiblerVoters();
   }, [selectedResponsibler]);
+
   const { data: districts, isLoading } = useQuery("districts", {
     queryFn: apiGetDistricts,
   });
@@ -73,20 +74,14 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
   });
 
   useEffect(() => {
-    queryClient.invalidateQueries("subdistricts");
-    queryClient.invalidateQueries("responsiblers");
-    queryClient.invalidateQueries("voters");
-
-    setSelectedDistrict(null);
-    setSelectedSubdistrict(null);
-    setVotingPlaceNumber(null);
-  }, []);
-
-  useEffect(() => {
-    refetchResponsiblers();
+    refetchVoters();
   }, [selectedDistrict, selectedSubdistrict, votingPlaceNumber]);
 
-  const { data: voters } = useQuery("voters", {
+  const {
+    data: voters,
+    refetch: refetchVoters,
+    isLoading: isLoadingVoters,
+  } = useQuery("voters", {
     queryFn: () =>
       apiGetVoters({
         districtName: selectedDistrict!,
@@ -126,7 +121,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
 
   const responsiblersData = responsiblers?.data.map((r: any) => ({
     value: r.id + "",
-    label: `${r.name} - ${r.coordinatorName}`,
+    label: `${r.name} - ${r.status} - ${r.coordinatorName} - TPS ${r.vottingPlaceNumber} ${r.subdistrictName}`,
   }));
 
   const { mutate, isLoading: isCreatingRV } = useMutation({
@@ -136,7 +131,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
   });
   const votersData = voters?.data.map((d: any) => ({
     value: d.id + "",
-    label: `${d.individualCardNumber} - ${d.name} - ${d.birthPlace}, ${d.birthDate}`,
+    label: `${d.name} - ${d.birthPlace}, ${d.birthDate} - ${d.districtName} - ${d.subdistrictName} - TPS ${d.pollingPlaceNumber}`,
   }));
 
   function handleFinishCreatingRVAttempt(resp: any) {
@@ -191,6 +186,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
         <Group grow>
           <Select
             label="Pilih Kecamatan"
+            searchable
             data={districtsData || []}
             disabled={isLoading}
             value={selectedDistrict}
@@ -203,6 +199,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
             }}
           />
           <Select
+            searchable
             label="Pilih Kelurahan"
             value={selectedSubdistrict}
             onChange={(e) => {
@@ -256,7 +253,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
             }}
             data={votersData || []}
             searchable
-            disabled={isLoadingResponsiblers}
+            disabled={isLoadingVoters}
           />
           <Button
             disabled={!selectedVoter || !selectedResponsibler}
@@ -280,19 +277,31 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
           {isFetchingResponsiblerVoters ? (
             <Loader />
           ) : (
-            responsiblerVoters?.data.map((rv: any) => (
-              <Group
-                key={rv.voter.name + rv.voter.individualCardNumber + "voterre"}
-              >
-                <Title size={16}>
-                  - {rv.voter.name} - ({rv.voter.individualCardNumber})
-                </Title>
+            <Stack>
+              <Title size={"sm"}>
+                Jumlah Pemilih ({responsiblerVoters?.data?.length} Orang)
+              </Title>
+              {responsiblerVoters?.data.map((rv: any) => (
+                <Group
+                  key={
+                    rv.voter.name + rv.voter.individualCardNumber + "voterre"
+                  }
+                >
+                  <Title size={12}>
+                    - {rv.voter.name} - {rv.voter.birthPlace},{" "}
+                    {rv.voter.birthDate} - ({rv.voter.individualCardNumber})
+                  </Title>
 
-                <Button onClick={() => deleteResponsiblerVoter(rv)}>
-                  &#10005;
-                </Button>
-              </Group>
-            ))
+                  <Button
+                    size="xs"
+                    p={4}
+                    onClick={() => deleteResponsiblerVoter(rv)}
+                  >
+                    Hapus &#10005;
+                  </Button>
+                </Group>
+              ))}
+            </Stack>
           )}
         </Stack>
       </Stack>
