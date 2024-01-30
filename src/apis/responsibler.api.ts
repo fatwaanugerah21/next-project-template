@@ -36,7 +36,7 @@ export async function apiGetResponsiblers({
 }: {
   districtName: string;
   subdistrictName: string;
-  votingPlaceNumber: string;
+  votingPlaceNumber?: string;
 }) {
   let url = formatUrl(endpoint);
 
@@ -53,6 +53,8 @@ export async function apiGetResponsiblers({
   if (!!votingPlaceNumber) {
     url += `votingPlaceNumber=${votingPlaceNumber}&`;
   }
+
+  console.log("Fetching responsiblers: ", url);
 
   const resp = await fetch(url, {
     method: "GET",

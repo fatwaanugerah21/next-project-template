@@ -10,6 +10,7 @@ import {
 } from "./table.component";
 import TableTdComponent from "./table-td.component";
 import { COLORS } from "@/constants/colors.contant";
+import { getUUID } from "@/utils/function.util";
 
 interface ITableRowComponentProps {
   isLast: boolean;
@@ -28,6 +29,8 @@ const TableRowComponent: React.FC<ITableRowComponentProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const valDup = {};
+
   return (
     <tr
       id="table-row"
@@ -37,10 +40,11 @@ const TableRowComponent: React.FC<ITableRowComponentProps> = ({
     >
       {heads.map((head, headIdx) => {
         const value = element[head.rowKey];
+        let key = value + "" + getUUID();
         return (
           <TableTdComponent
             width={head.width}
-            key={element.id + "td" + element.number}
+            key={key}
             isFirstCol={headIdx === 0}
             isHaveAction={!!actions?.length}
             isLastRow={isLast}
@@ -81,7 +85,7 @@ const TableRowComponent: React.FC<ITableRowComponentProps> = ({
                       style={{ marginRight: ".5rem" }}
                     />
                   )}
-                  {t(action.label)}
+                  <span>{t(action.label)}</span>
                 </Button>
               );
             })}

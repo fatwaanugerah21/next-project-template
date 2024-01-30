@@ -10,21 +10,40 @@ import TableComponent, {
 } from "@/components/table/table.component";
 import { COLORS } from "@/constants/colors.contant";
 import MainLayout from "@/layouts/main.layout";
-import { Group, Select, Stack, Table, TextInput, Title } from "@mantine/core";
+import { getUUID } from "@/utils/function.util";
+import {
+  Button,
+  Group,
+  Select,
+  Stack,
+  Table,
+  TextInput,
+  Title,
+} from "@mantine/core";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
+import Swal from "sweetalert2";
 
 interface ICheckListVoterProps {}
 
 const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
   const { push } = useRouter();
-  const { data: responsiblers, refetch } = useQuery({
+
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState<string>("");
+  const [votingPlaceNumber, setVotingPlaceNumber] = useState<string>("");
+
+  const {
+    data: responsiblers,
+    refetch: refetchResponsiblers,
+    isLoading: isFetchingResponsiblers,
+  } = useQuery({
     queryFn: () =>
       apiGetResponsiblers({
-        districtName: "",
-        subdistrictName: "",
-        votingPlaceNumber: "",
+        districtName: selectedDistrict,
+        subdistrictName: selectedSubdistrict,
+        votingPlaceNumber: votingPlaceNumber,
       }),
   });
 
@@ -42,12 +61,6 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
       width: "0.1rem",
     },
     {
-      rowKey: "individualCardNumber",
-      rowTextAlign: "left",
-      title: "NIK",
-      width: "1rem",
-    },
-    {
       rowKey: "name",
       rowTextAlign: "left",
       title: "Name",
@@ -60,17 +73,12 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
       width: "1rem",
     },
     {
-      rowKey: "phoneNumber",
-      rowTextAlign: "left",
-      title: "Nomor Telepon",
-      width: "1rem",
-    },
-    {
       rowKey: "status",
       rowTextAlign: "left",
-      title: "Jumlah Pemilih",
+      title: "Status",
       width: "1rem",
     },
+
     {
       rowKey: "districtName",
       rowTextAlign: "left",
@@ -89,16 +97,28 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
       title: "TPS",
       width: "1rem",
     },
+    {
+      rowKey: "phoneNumber",
+      rowTextAlign: "left",
+      title: "Nomor Telepon",
+      width: "1rem",
+    },
+    {
+      rowKey: "votersAmt",
+      rowTextAlign: "left",
+      title: "Jumlah Pemilih",
+      width: "1rem",
+    },
   ];
 
   const elements: IFETableRowColumnProps[] = responsiblers?.data?.map(
     (rd: any, idx: number) => {
       const d = {
-        id: rd?.id,
+        id: rd.id,
+        key: getUUID(),
         number: idx + 1,
         isKip: rd?.isKip ? "KIP" : "-",
-        individualCardNumber:
-          rd?.individualCardNumber?.replace("undefined", "-") || "",
+        status: rd?.status?.replace("undefined", "-") || "",
         name: rd?.name?.replace("undefined", "-") || "",
         coordinatorName: rd?.coordinatorName?.replace("undefined", "-") || "",
         phoneNumber: rd?.phoneNumber?.replace("undefined", "-") || "",
@@ -107,7 +127,6 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
         subdistrictName: rd?.subdistrictName?.replace("undefined", "-") || "",
         vottingPlaceNumber:
           rd?.vottingPlaceNumber?.replace("undefined", "-") || "",
-        status: rd?.status?.replace("undefined", "-") || "",
       };
       return d;
     }
@@ -117,17 +136,9 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
     mutationKey: "delete-responsibler-api",
     mutationFn: apiDeleteResponsibler,
     onSuccess: () => {
-      refetch();
+      refetchResponsiblers();
     },
   });
-
-  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
-  const [selectedSubdistrict, setSelectedSubdistrict] = useState<string | null>(
-    null
-  );
-  const [votingPlaceNumber, setVotingPlaceNumber] = useState<string | null>(
-    null
-  );
 
   const { data: districts, isLoading } = useQuery("districts", {
     queryFn: apiGetDistricts,
@@ -145,6 +156,11 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
     queryFn: () => apiGetSubdistricts(selectedDistrict!),
     enabled: !!selectedDistrict,
   });
+
+  useEffect(() => {
+    refetchSubdistricts();
+  }, [selectedDistrict]);
+
   const subdistrictsData = subdistricts?.data.map((d: any) => ({
     value: d.name,
     label: d.name,
@@ -155,13 +171,17 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDistrict]);
 
+  function handleFilterClicked() {
+    refetchResponsiblers();
+  }
+
   return (
     <Stack p={"lg"}>
       <Title mt={16} align="center">
         Daftar Pemilih
       </Title>
 
-      <Group grow>
+      <Group align="end" grow>
         <Select
           label="Pilih Kecamatan"
           searchable
@@ -169,7 +189,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
           disabled={isLoading}
           value={selectedDistrict}
           onChange={(e) => {
-            setSelectedDistrict(e);
+            setSelectedDistrict(e || "");
           }}
         />
         <Select
@@ -177,7 +197,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
           label="Pilih Kelurahan"
           value={selectedSubdistrict}
           onChange={(e) => {
-            setSelectedSubdistrict(e);
+            setSelectedSubdistrict(e || "");
           }}
           data={subdistrictsData || []}
           disabled={isLoadingSubdistricts || !selectedDistrict}
@@ -191,35 +211,50 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
           }}
           disabled={!selectedSubdistrict}
         />
+
+        <Button
+          loading={isFetchingResponsiblers}
+          disabled={
+            !selectedDistrict && !selectedSubdistrict && !votingPlaceNumber
+          }
+          onClick={handleFilterClicked}
+        >
+          Aktifkan Filter
+        </Button>
       </Group>
 
-      <TableComponent
-        elements={elements}
-        heads={heads}
-        actions={[
-          {
-            buttonBackground: COLORS.BLUE,
-            label: "Detail",
-            onClick: (r) => {
-              push(`/check-list-voters/${r.id}`);
+      {!isLoadingSubdistricts ? (
+        <TableComponent
+          elements={elements}
+          heads={heads}
+          isLoading={isFetchingResponsiblers}
+          actions={[
+            {
+              buttonBackground: COLORS.BLUE,
+              label: "Detail",
+              onClick: (r) => {
+                push(`/check-list-voters/${r.id}`);
+              },
             },
-          },
-          {
-            buttonBackground: COLORS.BLUE,
-            label: "Update",
-            onClick: (r) => {
-              push(`/check-list-voters/${r.id}`);
+            {
+              buttonBackground: COLORS.DANGER,
+              label: "Hapus",
+              onClick: async (r) => {
+                const { isConfirmed } = await Swal.fire({
+                  title: "Hapus Penanggung Jawab",
+                  text: `Hapus ${r.name}?`,
+                  confirmButtonText: "Hapus",
+                });
+
+                if (!isConfirmed) return;
+                deleteResponsibler(parseInt(r.id as string));
+              },
             },
-          },
-          {
-            buttonBackground: COLORS.DANGER,
-            label: "Hapus",
-            onClick: (r) => {
-              deleteResponsibler(parseInt(r.id as string));
-            },
-          },
-        ]}
-      />
+          ]}
+        />
+      ) : (
+        <></>
+      )}
     </Stack>
   );
 };

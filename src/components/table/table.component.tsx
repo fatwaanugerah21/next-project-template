@@ -3,6 +3,7 @@ import { useTranslation } from "next-i18next";
 import React from "react";
 import TableRowComponent from "./table-row.component";
 import { COLORS } from "@/constants/colors.contant";
+import { getUUID } from "@/utils/function.util";
 
 interface ITableComponentProps {
   elements?: IFETableRowColumnProps[];
@@ -81,16 +82,23 @@ const TableComponent: React.FC<ITableComponentProps> = ({
     </tr>
   );
 
-  var rows = elements.map((element, rowIdx) => (
-    <TableRowComponent
-      key={element[heads[0].rowKey]?.toString() + rowIdx}
-      rowIdx={rowIdx}
-      element={element}
-      actions={actions}
-      heads={heads}
-      isLast={rowIdx === elements.length - 1}
-    />
-  ));
+  var rows = elements.map((element, rowIdx) => {
+    return (
+      <TableRowComponent
+        key={
+          element.key +
+          getUUID() +
+          element[heads[rowIdx]?.rowKey]?.toString() +
+          rowIdx
+        }
+        rowIdx={rowIdx}
+        element={element}
+        actions={actions}
+        heads={heads}
+        isLast={rowIdx === elements.length - 1}
+      />
+    );
+  });
 
   var loadingEl = (
     <tr>
@@ -121,7 +129,7 @@ const TableComponent: React.FC<ITableComponentProps> = ({
             {heads.map((head, idx) => {
               return (
                 <th
-                  key={`accessor+${head.rowKey}`}
+                  key={`accessor-of-${head.rowKey}`}
                   style={{
                     color: COLORS.WHITE,
                     width: head.width,

@@ -38,11 +38,6 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
   const [votingPlaceNumber, setVotingPlaceNumber] = useState<string | null>(
     null
   );
-  const [debouncedVotingPlaceNumber] = useDebouncedValue(
-    votingPlaceNumber,
-    200,
-    { leading: true }
-  );
   const [selectedVoter, setSelectedVoter] = useState<string | null>(null);
   const [selectedResponsibler, setSelectedResponsibler] = useState<
     string | null
@@ -65,19 +60,18 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
     enabled: !!selectedDistrict,
   });
 
-  const { data: responsiblers, isLoading: isLoadingResponsiblers } = useQuery(
-    "responsiblers",
-    {
-      queryFn: () =>
-        apiGetResponsiblers({
-          districtName: selectedDistrict!,
-          subdistrictName: selectedSubdistrict!,
-          votingPlaceNumber: votingPlaceNumber!,
-        }),
-      enabled:
-        !!selectedDistrict && !!selectedSubdistrict && !!votingPlaceNumber,
-    }
-  );
+  const {
+    data: responsiblers,
+    refetch: refetchResponsiblers,
+    isLoading: isLoadingResponsiblers,
+  } = useQuery("responsiblers", {
+    queryFn: () =>
+      apiGetResponsiblers({
+        districtName: selectedDistrict!,
+        subdistrictName: selectedSubdistrict!,
+      }),
+    enabled: !!selectedDistrict && !!selectedSubdistrict,
+  });
 
   const {
     data: voters,
@@ -224,6 +218,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
               setVotingPlaceNumber(e.target.value);
               setSelectedVoter(null);
             }}
+            onBlur={() => refetchResponsiblers()}
           />
         </Group>
 
