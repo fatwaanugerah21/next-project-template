@@ -143,12 +143,19 @@ const CoordinatorPage: React.FC<ICoordinatorPageProps> = ({}) => {
 
       const duplicateName: { [x in string]: boolean } = {};
 
+      let districtAbove = "";
+      let subdistrictAbove = "";
+      let tpsAbove = "";
       const responsiblers = sliced.flatMap((s) => {
+        if (!!s[1]) districtAbove = s[1] + "";
+        if (!!s[2]) subdistrictAbove = s[2] + "";
+        if (!!s[4]) tpsAbove = s[4] + "";
+
         const responsibler: TResponsibler = {
           isKip: !!s[0],
-          districtName: s[1] + "",
-          subdistrictName: s[2] + "",
-          vottingPlaceNumber: s[4] + "",
+          districtName: districtAbove,
+          subdistrictName: subdistrictAbove,
+          vottingPlaceNumber: tpsAbove,
           individualCardNumber: s[5] + "",
           name: s[6] + "",
           address: s[7] + "",
@@ -158,15 +165,9 @@ const CoordinatorPage: React.FC<ICoordinatorPageProps> = ({}) => {
           realVoter: parseInt(s[10] || "0"),
         };
 
-        if (
-          !!duplicateName[responsibler.name] ||
-          responsibler.name === "undefined"
-        ) {
+        if (responsibler.name === "undefined") {
           return [];
         }
-
-        duplicateName[responsibler.name] = true;
-
         if (!responsibler.name) return [];
 
         if (!responsibler.realVoter && responsibler.realVoter !== 0) {
@@ -176,6 +177,7 @@ const CoordinatorPage: React.FC<ICoordinatorPageProps> = ({}) => {
         return responsibler;
       });
 
+      console.log("Responsiblers: ", responsiblers);
       const deleteResponse = await apiDeleteAllResponsiblers();
       console.log("deleteResponse: ", deleteResponse);
 
