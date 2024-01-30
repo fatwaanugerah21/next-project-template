@@ -85,3 +85,17 @@ export async function apiDeleteAllResponsiblers() {
 
   return data;
 }
+
+export async function apiDeleteResponsibler(id: number) {
+  const url = formatUrl(`${endpoint}/${id}`);
+  const resp = await fetch(url, {
+    method: "DELETE",
+    headers: getHeaders(),
+  });
+
+  const data = await resp.json();
+
+  console.log("Data: ", data);
+
+  return data;
+}

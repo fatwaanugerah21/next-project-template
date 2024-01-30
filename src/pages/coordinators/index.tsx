@@ -18,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import * as yup from "yup";
 import {
   apiDeleteAllResponsiblers,
+  apiDeleteResponsibler,
   apiPostResponsibler,
   apiPostResponsiblers,
 } from "@/apis/responsibler.api";
@@ -204,8 +205,6 @@ const CoordinatorPage: React.FC<ICoordinatorPageProps> = ({}) => {
         : "Gagal menambah koordinator",
       text: resp.message,
     });
-
-    // reset();
   }
 
   async function handleResponsiblerSubmit(s: TResponsibler) {
@@ -220,11 +219,10 @@ const CoordinatorPage: React.FC<ICoordinatorPageProps> = ({}) => {
       status: s.status,
       phoneNumber: s.phoneNumber,
       coordinatorName: s.coordinatorName,
-      realVoter: s.realVoter || 0,
+      realVoter: parseInt(s.realVoter + "") || 0,
     };
 
     const resp = await mutate(responsibler);
-    console.log("Response: ", resp);
   }
 
   return (

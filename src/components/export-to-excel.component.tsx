@@ -56,7 +56,12 @@ const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({
     if (heading) {
       worksheet.insertRow(1, []);
       const headerRow = worksheet.insertRow(1, Object.values(heading));
+      const targetRow = worksheet.insertRow(
+        1,
+        Object.values([" ", process.env.NEXT_PUBLIC_TARGET])
+      );
       headerRow.font = { size: 13, bold: true }; // Adjust the font size as needed
+      targetRow.font = { size: 13, bold: true }; // Adjust the font size as needed
     }
 
     // Add data to the worksheet
@@ -81,7 +86,7 @@ const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = filename || "exported-data.xlsx";
+      a.download = `${filename}.xlsx` || "exported-data.xlsx";
       a.click();
       window.URL.revokeObjectURL(url);
     });

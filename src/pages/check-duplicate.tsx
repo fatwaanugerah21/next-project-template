@@ -76,7 +76,7 @@ const CheckDuplicate: React.FC<ICheckDuplicateProps> = ({}) => {
                     </Text>
 
                     <Button onClick={() => deleteFromddd(ddd)}>
-                      &#10005; Hapus Dari {ddd.responsibler.name}
+                      &#10005; Hapus
                     </Button>
                   </Group>
                 );

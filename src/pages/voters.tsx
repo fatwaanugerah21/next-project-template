@@ -25,6 +25,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { QueryClient, useMutation, useQuery } from "react-query";
 import Link from "next/link";
 import FormComponent from "@/components/form.component";
+import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 
 interface IVotersPageProps {}
 const queryClient = new QueryClient();
@@ -36,6 +37,11 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
   );
   const [votingPlaceNumber, setVotingPlaceNumber] = useState<string | null>(
     null
+  );
+  const [debouncedVotingPlaceNumber] = useDebouncedValue(
+    votingPlaceNumber,
+    200,
+    { leading: true }
   );
   const [selectedVoter, setSelectedVoter] = useState<string | null>(null);
   const [selectedResponsibler, setSelectedResponsibler] = useState<
@@ -59,23 +65,19 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
     enabled: !!selectedDistrict,
   });
 
-  const {
-    data: responsiblers,
-    refetch: refetchResponsiblers,
-    isLoading: isLoadingResponsiblers,
-  } = useQuery("responsiblers", {
-    queryFn: () =>
-      apiGetResponsiblers({
-        districtName: selectedDistrict!,
-        subdistrictName: selectedSubdistrict!,
-        votingPlaceNumber: votingPlaceNumber!,
-      }),
-    enabled: !!selectedDistrict && !!selectedSubdistrict && !!votingPlaceNumber,
-  });
-
-  useEffect(() => {
-    refetchVoters();
-  }, [selectedDistrict, selectedSubdistrict, votingPlaceNumber]);
+  const { data: responsiblers, isLoading: isLoadingResponsiblers } = useQuery(
+    "responsiblers",
+    {
+      queryFn: () =>
+        apiGetResponsiblers({
+          districtName: selectedDistrict!,
+          subdistrictName: selectedSubdistrict!,
+          votingPlaceNumber: votingPlaceNumber!,
+        }),
+      enabled:
+        !!selectedDistrict && !!selectedSubdistrict && !!votingPlaceNumber,
+    }
+  );
 
   const {
     data: voters,
@@ -88,7 +90,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
         subdistrictName: selectedSubdistrict!,
         votingPlaceNumber: votingPlaceNumber!,
       }),
-    enabled: !!selectedDistrict && !!selectedSubdistrict && !!votingPlaceNumber,
+    enabled: false,
   });
 
   const {
@@ -174,6 +176,11 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
       text: resp.message,
     });
   }
+
+  function handleRefreshVotersList() {
+    refetchVoters();
+  }
+
   return (
     <MainLayout>
       <Title>Input Data Pemilih</Title>
@@ -194,7 +201,6 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
               setSelectedDistrict(e);
               setSelectedSubdistrict(null);
               setVotingPlaceNumber(null);
-              setSelectedResponsibler(null);
               setSelectedVoter(null);
             }}
           />
@@ -205,7 +211,6 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
             onChange={(e) => {
               setSelectedSubdistrict(e);
               setVotingPlaceNumber(null);
-              setSelectedResponsibler(null);
               setSelectedVoter(null);
             }}
             data={subdistrictsData || []}
@@ -217,7 +222,6 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
             value={votingPlaceNumber + ""}
             onChange={(e) => {
               setVotingPlaceNumber(e.target.value);
-              setSelectedResponsibler(null);
               setSelectedVoter(null);
             }}
           />
@@ -242,6 +246,9 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
         mt={16}
       >
         <Title size={20}>Daftar Pemilih</Title>
+        <Button w={"fit-content"} my={0} onClick={handleRefreshVotersList}>
+          Refresh List Pemilih &#x21bb;
+        </Button>
         <FormComponent onSubmit={handleSubmit}>
           <Select
             ref={voterSelectRef}
@@ -289,7 +296,9 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
                 >
                   <Title size={12}>
                     - {rv.voter.name} - {rv.voter.birthPlace},{" "}
-                    {rv.voter.birthDate} - ({rv.voter.individualCardNumber})
+                    {rv.voter.birthDate} - {rv.voter.districtName} -{" "}
+                    {rv.voter.subdistrictName} - TPS{" "}
+                    {rv.voter.pollingPlaceNumber}
                   </Title>
 
                   <Button

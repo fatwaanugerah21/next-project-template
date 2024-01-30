@@ -31,6 +31,7 @@ export async function apiGetVoters({
   if (!!districtName || !!subdistrictName || !!votingPlaceNumber) {
     url += "?";
   }
+  console.log("votingPlaceNumber: ", votingPlaceNumber);
 
   if (!!districtName) {
     url += `districtName=${districtName}&`;
@@ -39,7 +40,7 @@ export async function apiGetVoters({
     url += `subdistrictName=${subdistrictName}&`;
   }
   if (!!votingPlaceNumber) {
-    url += `votingPlaceNumber=${votingPlaceNumber}&`;
+    url += `votingPlaceNumber=${votingPlaceNumber}`;
   }
 
   try {
