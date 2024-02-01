@@ -75,7 +75,7 @@ const TableComponent: React.FC<ITableComponentProps> = ({
             weight={"bold"}
             size={"lg"}
           >
-            {t("no-data-yet-text")}
+            {t("Pilih Kecamatan dan Kelurahan")}
           </Text>
         </Stack>
       </td>

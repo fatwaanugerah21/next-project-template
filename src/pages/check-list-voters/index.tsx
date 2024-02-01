@@ -45,6 +45,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
         subdistrictName: selectedSubdistrict,
         votingPlaceNumber: votingPlaceNumber,
       }),
+    enabled: !!selectedDistrict,
   });
 
   const heads: THead[] = [
