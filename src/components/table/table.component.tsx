@@ -10,6 +10,7 @@ interface ITableComponentProps {
   heads: THead[];
   actions?: TableAction[];
   isLoading?: boolean;
+  emptyLabel: string;
 }
 
 type TableRowCellKey = string;
@@ -58,6 +59,7 @@ const TableComponent: React.FC<ITableComponentProps> = ({
   elements = [],
   actions,
   isLoading,
+  emptyLabel,
 }) => {
   const { t } = useTranslation();
 
@@ -75,7 +77,7 @@ const TableComponent: React.FC<ITableComponentProps> = ({
             weight={"bold"}
             size={"lg"}
           >
-            {t("Pilih Kecamatan dan Kelurahan")}
+            {emptyLabel || t("Pilih Kecamatan dan Kelurahan")}
           </Text>
         </Stack>
       </td>

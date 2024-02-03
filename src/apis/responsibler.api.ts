@@ -66,6 +66,37 @@ export async function apiGetResponsiblers({
   return data;
 }
 
+export async function apiGetResponsiblersWithVoters({
+  districtName,
+  subdistrictName,
+}: {
+  districtName: string;
+  subdistrictName: string;
+  votingPlaceNumber?: string;
+}) {
+  let url = `${formatUrl(endpoint)}/with-voters`;
+
+  if (!!districtName) {
+    url += "?";
+  }
+
+  if (!!districtName) {
+    url += `districtName=${districtName}&`;
+  }
+  if (!!subdistrictName) {
+    url += `subdistrictName=${subdistrictName}&`;
+  }
+
+  const resp = await fetch(url, {
+    method: "GET",
+    headers: getHeaders(),
+  });
+
+  const data = await resp.json();
+
+  return data;
+}
+
 export async function apiGetDetailResponsibler(id: number) {
   const resp = await fetch(formatUrl(`${endpoint}/${id}`), {
     method: "GET",

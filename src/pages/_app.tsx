@@ -25,7 +25,8 @@ function App(props: AppProps) {
   const [isValid, setIsValid] = useState(false);
 
   async function validateUser() {
-    const { data: password } = await apiGetPassword();
+    const data = await apiGetPassword();
+    const password = data?.data;
 
     console.log("inputtedPassword: ", inputtedPassword);
     console.log("password: ", password);

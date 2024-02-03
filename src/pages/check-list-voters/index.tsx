@@ -1,7 +1,9 @@
 import { apiGetDistricts } from "@/apis/district.api";
+import { apiGetInputtedResponsiblerVotersDistrictAndSubdistrict } from "@/apis/responsibler-voter.api";
 import {
   apiDeleteResponsibler,
   apiGetResponsiblers,
+  apiGetResponsiblersWithVoters,
 } from "@/apis/responsibler.api";
 import { apiGetSubdistricts } from "@/apis/subdistrict.api";
 import TableComponent, {
@@ -9,7 +11,6 @@ import TableComponent, {
   THead,
 } from "@/components/table/table.component";
 import { COLORS } from "@/constants/colors.contant";
-import MainLayout from "@/layouts/main.layout";
 import { getUUID } from "@/utils/function.util";
 import {
   Button,
@@ -22,7 +23,7 @@ import {
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useMutation, useQuery } from "react-query";
+import { QueryClient, useMutation, useQuery } from "react-query";
 import Swal from "sweetalert2";
 
 interface ICheckListVoterProps {}
@@ -32,18 +33,35 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
 
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [selectedSubdistrict, setSelectedSubdistrict] = useState<string>("");
-  const [votingPlaceNumber, setVotingPlaceNumber] = useState<string>("");
+
+  const { data: inputtedDistrictsAndSubdistricts } = useQuery({
+    queryKey: "inputted-districts-and-subdistrict",
+    queryFn: () => apiGetInputtedResponsiblerVotersDistrictAndSubdistrict(),
+  });
+
+  const inputtedDistricts: { [x in string]: string[] } = {};
+
+  inputtedDistrictsAndSubdistricts?.data?.forEach(
+    (das: { districtName: string; subdistrictName: string }) => {
+      console.log("Das: ", das);
+      if (!inputtedDistricts[das.districtName]?.length) {
+        inputtedDistricts[das.districtName] = [];
+      }
+
+      inputtedDistricts[das.districtName].push(das.subdistrictName);
+    }
+  );
 
   const {
     data: responsiblers,
     refetch: refetchResponsiblers,
     isLoading: isFetchingResponsiblers,
   } = useQuery({
+    queryKey: "inputted-responsiblers-with-rv",
     queryFn: () =>
-      apiGetResponsiblers({
+      apiGetResponsiblersWithVoters({
         districtName: selectedDistrict,
         subdistrictName: selectedSubdistrict,
-        votingPlaceNumber: votingPlaceNumber,
       }),
     enabled: !!selectedDistrict,
   });
@@ -159,7 +177,8 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
   });
 
   useEffect(() => {
-    refetchSubdistricts();
+    const qc = new QueryClient();
+    qc.invalidateQueries("inputted-responsiblers-with-rv");
   }, [selectedDistrict]);
 
   const subdistrictsData = subdistricts?.data.map((d: any) => ({
@@ -176,6 +195,27 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
     refetchResponsiblers();
   }
 
+  function showInputtedDistrictsAndSubdistricts() {
+    Swal.fire({
+      icon: "success",
+      title: "Kecamatan Dan Kelurahan yang Sudah di Input",
+      html: `
+      ${Object.keys(inputtedDistricts).map((key: string) => {
+        return `
+        <h4>${key} (${inputtedDistricts[key].length} Kelurahan)</h4>
+        <div>
+        ${inputtedDistricts[key]
+          .map((val: string) => {
+            return `<span> ${val.replace(",", "")}</span>`;
+          })
+          .join(" | ")}
+        </div>
+        `;
+      })}
+      `.replaceAll(",", ""),
+    });
+  }
+
   return (
     <Stack p={"lg"}>
       <Title mt={16} align="center">
@@ -188,46 +228,43 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
           searchable
           data={districtsData || []}
           disabled={isLoading}
+          clearable
           value={selectedDistrict}
           onChange={(e) => {
             setSelectedDistrict(e || "");
+            setSelectedSubdistrict("");
           }}
         />
         <Select
           searchable
           label="Pilih Kelurahan"
           value={selectedSubdistrict}
+          clearable
           onChange={(e) => {
             setSelectedSubdistrict(e || "");
           }}
           data={subdistrictsData || []}
           disabled={isLoadingSubdistricts || !selectedDistrict}
         />
-        <TextInput
-          label="Input TPS"
-          type="number"
-          value={votingPlaceNumber + ""}
-          onChange={(e) => {
-            setVotingPlaceNumber(e.target.value);
-          }}
-          disabled={!selectedSubdistrict}
-        />
 
         <Button
           loading={isFetchingResponsiblers}
-          disabled={
-            !selectedDistrict && !selectedSubdistrict && !votingPlaceNumber
-          }
+          disabled={!selectedDistrict && !selectedSubdistrict}
           onClick={handleFilterClicked}
         >
           Aktifkan Filter
         </Button>
       </Group>
 
+      <Button onClick={showInputtedDistrictsAndSubdistricts}>
+        Kecamatan dan Kelurahan Yang Sudah di Input
+      </Button>
+
       {!isLoadingSubdistricts ? (
         <TableComponent
           elements={elements}
           heads={heads}
+          emptyLabel={!selectedDistrict ? "Pilih Kecamatan" : "Data tidak ada"}
           isLoading={isFetchingResponsiblers}
           actions={[
             {

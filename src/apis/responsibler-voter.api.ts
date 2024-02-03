@@ -23,6 +23,23 @@ export async function apiCreateResponsiblerVoter({
   return data;
 }
 
+export async function apiGetInputtedResponsiblerVotersDistrictAndSubdistrict() {
+  try {
+    let url = `${formatUrl(endpoint)}/inputted-district-and-subdistrict`;
+
+    const resp = await fetch(url, {
+      method: "GET",
+      headers: getHeaders(),
+    });
+
+    const data = await resp.json();
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export async function apiGetResponsiblerVoters(params: {
   responsiblerId: number;
 }) {
