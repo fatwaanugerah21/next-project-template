@@ -108,7 +108,6 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
         {responsiblerDetail?.data?.isKip ? " (KIP) " : ""}` ({elements?.length}{" "}
         Orang)
       </Title>
-
       <ExportToExcelButton
         data={elements?.map((m, idx) => ({
           No: idx + 1,
@@ -129,9 +128,11 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
           }(${elements?.length} Orang)`,
         }}
       />
-
-      <TableComponent elements={elements} heads={heads} />
-
+      <TableComponent
+        emptyLabel="Tidak Ada Data"
+        elements={elements}
+        heads={heads}
+      />
       <Stack mt={10}>
         <Link href={"/"}>
           <Button w={"100%"}>Back To Homepage</Button>
