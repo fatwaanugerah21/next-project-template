@@ -211,6 +211,8 @@ const Homepage: React.FC<IHomepageProps> = ({}) => {
     reader.readAsBinaryString(dptFile);
   }
 
+  return <Title>Feature Disabled</Title>;
+
   return (
     <>
       <SEO title={"Price Simulator"} />

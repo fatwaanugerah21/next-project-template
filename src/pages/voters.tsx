@@ -117,7 +117,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
 
   const responsiblersData = responsiblers?.data.map((r: any) => ({
     value: r.id + "",
-    label: `${r.name} - ${r.status} - ${r.coordinatorName} - TPS ${r.vottingPlaceNumber} ${r.subdistrictName}`,
+    label: `${r.name} - ${r.status} - ${r.coordinatorName} - TPS ${r.vottingPlaceNumber} ${r.subdistrictName} - Terinput ${r.realVoter} Suara`,
   }));
 
   const { mutate, isLoading: isCreatingRV } = useMutation({

@@ -13,11 +13,11 @@ const Homepage: React.FC<IHomepageProps> = ({}) => {
         </Title>
 
         <Stack mt={24}>
-          <Link href={"/dpt"}>
+          {/* <Link href={"/dpt"}>
             <Button w={"100%"} mt={10} color="light">
               Input Data DPT
             </Button>
-          </Link>
+          </Link> */}
           <Link href={"/coordinators"}>
             <Button w={"100%"} mt={10} color="light">
               Input Data Koordinator Dan Penanggung Jawab

@@ -28,6 +28,7 @@ import { apiGetDistricts } from "@/apis/district.api";
 import { apiGetSubdistricts } from "@/apis/subdistrict.api";
 import Swal from "sweetalert2";
 import { COLORS } from "@/constants/colors.contant";
+import { useRouter } from "next/router";
 
 interface ICoordinatorPageProps {}
 
@@ -227,6 +228,8 @@ const CoordinatorPage: React.FC<ICoordinatorPageProps> = ({}) => {
     const resp = await mutate(responsibler);
   }
 
+  const { query } = useRouter();
+
   return (
     <MainLayout>
       <Stack mt={10}>
@@ -236,23 +239,25 @@ const CoordinatorPage: React.FC<ICoordinatorPageProps> = ({}) => {
           </Button>
         </Link>
       </Stack>
-      <Card withBorder mt={20}>
-        <Title align="center" mb={10}>
-          Input Pakai File Excel
-        </Title>
-        <FormComponent onSubmit={onFileSubmit(handleFileSubmit)}>
-          <Group align="end" grow>
-            <FileInput
-              label="File Koordinator dan Penanggung Jawab"
-              {...getFileInputProps("coordinatorFile")}
-              placeholder="koordinator.xlsx"
-            />
-            <Button loading={isLoading} size="sm" type="submit">
-              Import Semua Data Excel
-            </Button>
-          </Group>
-        </FormComponent>
-      </Card>
+      {query.isWithFile && (
+        <Card withBorder mt={20}>
+          <Title align="center" mb={10}>
+            Input Pakai File Excel
+          </Title>
+          <FormComponent onSubmit={onFileSubmit(handleFileSubmit)}>
+            <Group align="end" grow>
+              <FileInput
+                label="File Koordinator dan Penanggung Jawab"
+                {...getFileInputProps("coordinatorFile")}
+                placeholder="koordinator.xlsx"
+              />
+              <Button loading={isLoading} size="sm" type="submit">
+                Import Semua Data Excel
+              </Button>
+            </Group>
+          </FormComponent>
+        </Card>
+      )}
 
       <Card withBorder mt={20}>
         <Title align="center" my={10}>
