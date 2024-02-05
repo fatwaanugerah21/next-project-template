@@ -127,7 +127,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
   });
   const votersData = voters?.data.map((d: any) => ({
     value: d.id + "",
-    label: `${d.name} - ${d.birthPlace}, ${d.birthDate} - ${d.districtName} - ${d.subdistrictName} - TPS ${d.pollingPlaceNumber}`,
+    label: `${d.name} - ${d.birthPlace}, ${d.birthDate} - ${d.districtName} - ${d.subdistrictName} - TPS ${d.pollingPlaceNumber} - ${d.individualCardNumber}`,
   }));
 
   function handleFinishCreatingRVAttempt(resp: any) {
@@ -188,6 +188,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
           <Select
             label="Pilih Kecamatan"
             searchable
+            clearable
             data={districtsData || []}
             disabled={isLoading}
             value={selectedDistrict}
@@ -207,6 +208,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
               setVotingPlaceNumber(null);
               setSelectedVoter(null);
             }}
+            clearable
             data={subdistrictsData || []}
             disabled={isLoadingSubdistricts}
           />
