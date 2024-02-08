@@ -1,4 +1,4 @@
-import { Button, Group } from "@mantine/core";
+import { Button, Group, Stack } from "@mantine/core";
 import { useTranslation } from "next-i18next";
 import React from "react";
 import {
@@ -11,6 +11,7 @@ import {
 import TableTdComponent from "./table-td.component";
 import { COLORS } from "@/constants/colors.contant";
 import { getUUID } from "@/utils/function.util";
+import Link from "next/link";
 
 interface ITableRowComponentProps {
   isLast: boolean;
@@ -68,25 +69,33 @@ const TableRowComponent: React.FC<ITableRowComponentProps> = ({
           <Group style={{ justifyContent: "center" }} noWrap>
             {actions.map((action) => {
               const Icon = action.icon;
+
+              const Wrapper: any = action.isLink ? Link : Stack;
+
+              console.log("Wrapper: ", Wrapper);
               return (
-                <Button
-                  loading={
-                    !!action.isLoading ? action.isLoading(element) : false
-                  }
+                <Wrapper
                   key={action.label}
-                  style={{
-                    background: action.buttonBackground,
-                  }}
-                  onClick={() => action.onClick(element)}
+                  href={action.href && action.href(element)}
                 >
-                  {!!Icon && (
-                    <Icon
-                      fill={COLORS.WHITE}
-                      style={{ marginRight: ".5rem" }}
-                    />
-                  )}
-                  <span>{t(action.label)}</span>
-                </Button>
+                  <Button
+                    loading={
+                      !!action.isLoading ? action.isLoading(element) : false
+                    }
+                    style={{
+                      background: action.buttonBackground,
+                    }}
+                    onClick={() => action.onClick && action.onClick(element)}
+                  >
+                    {!!Icon && (
+                      <Icon
+                        fill={COLORS.WHITE}
+                        style={{ marginRight: ".5rem" }}
+                      />
+                    )}
+                    <span>{t(action.label)}</span>
+                  </Button>
+                </Wrapper>
               );
             })}
           </Group>

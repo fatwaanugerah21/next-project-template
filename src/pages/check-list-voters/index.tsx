@@ -1,5 +1,9 @@
 import { apiGetDistricts } from "@/apis/district.api";
-import { apiGetInputtedResponsiblerVotersDistrictAndSubdistrict } from "@/apis/responsibler-voter.api";
+import {
+  apiGetInputtedResponsiblerVotersDistrictAndSubdistrict,
+  apiGetTotalResponsiblerVoters,
+  apiGetTotalResponsiblerVotersPerSubdistrict,
+} from "@/apis/responsibler-voter.api";
 import {
   apiDeleteResponsibler,
   apiGetResponsiblers,
@@ -13,16 +17,19 @@ import TableComponent, {
 import { COLORS } from "@/constants/colors.contant";
 import { getUUID } from "@/utils/function.util";
 import {
+  Accordion,
   Button,
   Group,
   Select,
   Stack,
   Table,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { QueryClient, useMutation, useQuery } from "react-query";
 import Swal from "sweetalert2";
 
@@ -33,6 +40,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
 
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [selectedSubdistrict, setSelectedSubdistrict] = useState<string>("");
+  const [selectedTps, setSelectedTps] = useState<string>("");
 
   const { data: inputtedDistrictsAndSubdistricts } = useQuery({
     queryKey: "inputted-districts-and-subdistrict",
@@ -43,7 +51,6 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
 
   inputtedDistrictsAndSubdistricts?.data?.forEach(
     (das: { districtName: string; subdistrictName: string }) => {
-      console.log("Das: ", das);
       if (!inputtedDistricts[das.districtName]?.length) {
         inputtedDistricts[das.districtName] = [];
       }
@@ -62,6 +69,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
       apiGetResponsiblersWithVoters({
         districtName: selectedDistrict,
         subdistrictName: selectedSubdistrict,
+        votingPlaceNumber: selectedTps,
       }),
     enabled: !!selectedDistrict,
   });
@@ -176,6 +184,43 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
     enabled: !!selectedDistrict,
   });
 
+  const { data: totalResponsiblerVoters } = useQuery(
+    "total-responsibler-voters",
+    {
+      queryFn: () => apiGetTotalResponsiblerVoters(),
+    }
+  );
+
+  const wantedSubdistrictVotersName = useRef("");
+  const { mutate: fetchSubdistrictTotalVoters } = useMutation({
+    mutationKey: "apiGetResponsiblerVoters",
+    mutationFn: (subdistrictName: string) =>
+      apiGetTotalResponsiblerVotersPerSubdistrict(subdistrictName),
+    onSuccess: handleSuccessFetchTotalResponsiblerVotersPerSubdistrict,
+  });
+
+  async function handleSuccessFetchTotalResponsiblerVotersPerSubdistrict(
+    value: any
+  ) {
+    const data = value.data;
+
+    console.log("data: ", data);
+    await Swal.fire({
+      title: `Total Suara di Kelurahan ${wantedSubdistrictVotersName.current}:  ${data.total} Suara`,
+      html: `
+      <div>
+      ${Object.keys(data)
+        .flatMap((tps) => {
+          if (tps === "total") return [];
+          return `<p>TPS ${tps}: ${data[tps]} Suara</p>`;
+        })
+        .join("")}
+      </div>
+      `,
+    });
+  }
+
+  const totalResponsiblerVotersData = totalResponsiblerVoters?.data;
   useEffect(() => {
     const qc = new QueryClient();
     qc.invalidateQueries("inputted-responsiblers-with-rv");
@@ -216,11 +261,55 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
     });
   }
 
+  async function showTotalResponsiblerVotersOfSubdistrict(
+    subdistrictName: string
+  ) {
+    wantedSubdistrictVotersName.current = subdistrictName;
+    await fetchSubdistrictTotalVoters(subdistrictName);
+  }
+
   return (
     <Stack p={"lg"}>
       <Title mt={16} align="center">
         Daftar Pemilih
       </Title>
+
+      <Stack>
+        <Accordion>
+          <Accordion.Item value={`value`}>
+            <Accordion.Control>
+              Total Suara Yang Terinput {totalResponsiblerVotersData?.total}{" "}
+              Suara
+            </Accordion.Control>
+            {Object.keys(totalResponsiblerVotersData || {}).flatMap(
+              (subdistrictName: string) => {
+                const count = totalResponsiblerVotersData?.[subdistrictName];
+                if (subdistrictName === "total" || count <= 0) return [];
+
+                return (
+                  <Accordion.Panel key={`asdckasdc-${subdistrictName}`}>
+                    <Group>
+                      <Text size={"xs"}>
+                        {subdistrictName}: {count} Suara
+                      </Text>
+
+                      <Button
+                        onClick={() =>
+                          showTotalResponsiblerVotersOfSubdistrict(
+                            subdistrictName
+                          )
+                        }
+                      >
+                        Detail
+                      </Button>
+                    </Group>
+                  </Accordion.Panel>
+                );
+              }
+            )}
+          </Accordion.Item>
+        </Accordion>
+      </Stack>
 
       <Group align="end" grow>
         <Select
@@ -244,6 +333,12 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
             setSelectedSubdistrict(e || "");
           }}
           data={subdistrictsData || []}
+          disabled={isLoadingSubdistricts || !selectedDistrict}
+        />
+        <TextInput
+          onChange={(e) => setSelectedTps(e.target.value)}
+          value={selectedTps}
+          label="TPS"
           disabled={isLoadingSubdistricts || !selectedDistrict}
         />
 
@@ -270,9 +365,8 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
             {
               buttonBackground: COLORS.BLUE,
               label: "Detail",
-              onClick: (r) => {
-                push(`/check-list-voters/${r.id}`);
-              },
+              href: (r) => `/check-list-voters/${r.id}`,
+              isLink: true,
             },
             {
               buttonBackground: COLORS.DANGER,
@@ -293,6 +387,12 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
       ) : (
         <></>
       )}
+
+      <Stack mt={10}>
+        <Link href={"/"}>
+          <Button w={"100%"}>Kembali ke Halaman Utama</Button>
+        </Link>
+      </Stack>
     </Stack>
   );
 };

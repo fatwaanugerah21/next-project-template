@@ -28,8 +28,6 @@ function App(props: AppProps) {
     const data = await apiGetPassword();
     const password = data?.data;
 
-    console.log("inputtedPassword: ", inputtedPassword);
-    console.log("password: ", password);
     if (inputtedPassword.current === password) {
       return;
     }

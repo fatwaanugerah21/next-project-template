@@ -27,7 +27,8 @@ const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({
       data.length > 0
         ? Object.keys(data[0]).map((key: string) => {
             let cw = defaultColumnWidth;
-            if (key === "TPS" || key === "No") cw = 4;
+            if (key === "No") cw = 4;
+            if (key === "TPS") cw = 8;
             if (key === "Kelurahan" || key === "Kecamatan") cw = 15;
             if (key === "NIK" || key === "NKK") cw = 18;
             return {
@@ -60,8 +61,8 @@ const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({
         1,
         Object.values([" ", process.env.NEXT_PUBLIC_TARGET])
       );
-      headerRow.font = { size: 13, bold: true }; // Adjust the font size as needed
-      targetRow.font = { size: 13, bold: true }; // Adjust the font size as needed
+      headerRow.font = { size: 16, bold: true }; // Adjust the font size as needed
+      targetRow.font = { size: 14, bold: true }; // Adjust the font size as needed
     }
 
     // Add data to the worksheet

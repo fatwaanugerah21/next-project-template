@@ -23,6 +23,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
   });
 
   const { data: responsiblerVoters } = useQuery({
+    queryKey: "apiGetResponsiblerVoters",
     queryFn: () =>
       apiGetResponsiblerVoters({
         responsiblerId: parseInt(query.id as string),
@@ -115,12 +116,13 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
           Alamat: m.address,
           Kecamatan: m.district,
           Kelurahan: m.subdistrict,
-          TPS: m.votingPlaceNumber,
+          TPS: `TPS ${m.votingPlaceNumber}`,
         }))}
-        filename={`DPT Untuk ${responsiblerDetail?.data?.name} - ${responsiblerDetail?.data?.coordinatorName}`}
+        filename={`(${process.env.NEXT_PUBLIC_API_TARGET_TYPE}) DPT Untuk ${responsiblerDetail?.data?.name} - ${responsiblerDetail?.data?.coordinatorName}`}
         sheetname="List Pemilih"
         heading={{
           good1: " ",
+          good2: " ",
           title: `Daftar Pemilih yang ditangani ${
             responsiblerDetail?.data?.name
           } - ${responsiblerDetail?.data?.coordinatorName} ${
@@ -134,8 +136,8 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
         heads={heads}
       />
       <Stack mt={10}>
-        <Link href={"/"}>
-          <Button w={"100%"}>Back To Homepage</Button>
+        <Link href={"/check-list-voters"}>
+          <Button w={"100%"}>Kembali ke Daftar List Pemilih</Button>
         </Link>
       </Stack>
     </Stack>

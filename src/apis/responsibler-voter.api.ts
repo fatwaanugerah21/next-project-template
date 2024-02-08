@@ -40,6 +40,42 @@ export async function apiGetInputtedResponsiblerVotersDistrictAndSubdistrict() {
   }
 }
 
+export async function apiGetTotalResponsiblerVoters() {
+  try {
+    let url = `${formatUrl(endpoint)}/total`;
+
+    const resp = await fetch(url, {
+      method: "GET",
+      headers: getHeaders(),
+    });
+
+    const data = await resp.json();
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function apiGetTotalResponsiblerVotersPerSubdistrict(
+  subdistrictName: string
+) {
+  try {
+    let url = `${formatUrl(endpoint)}/total/${subdistrictName}`;
+
+    const resp = await fetch(url, {
+      method: "GET",
+      headers: getHeaders(),
+    });
+
+    const data = await resp.json();
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export async function apiGetResponsiblerVoters(params: {
   responsiblerId: number;
 }) {

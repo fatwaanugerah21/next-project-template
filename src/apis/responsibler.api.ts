@@ -69,6 +69,7 @@ export async function apiGetResponsiblers({
 export async function apiGetResponsiblersWithVoters({
   districtName,
   subdistrictName,
+  votingPlaceNumber,
 }: {
   districtName: string;
   subdistrictName: string;
@@ -85,6 +86,9 @@ export async function apiGetResponsiblersWithVoters({
   }
   if (!!subdistrictName) {
     url += `subdistrictName=${subdistrictName}&`;
+  }
+  if (!!votingPlaceNumber) {
+    url += `votingPlaceNumber=${votingPlaceNumber}&`;
   }
 
   const resp = await fetch(url, {

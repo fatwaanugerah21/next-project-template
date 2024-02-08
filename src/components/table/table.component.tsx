@@ -37,7 +37,9 @@ export type TableAction = {
   icon?: React.FC<React.SVGAttributes<{}>>;
   label: string;
   buttonBackground: string;
-  onClick: (row: IFETableRowColumnProps) => void;
+  isLink?: boolean;
+  onClick?: (row: IFETableRowColumnProps) => void;
+  href?: (row: IFETableRowColumnProps) => string;
 };
 
 // The key in this object should match rowKey of Head object
