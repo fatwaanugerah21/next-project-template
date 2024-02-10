@@ -1,13 +1,7 @@
 import { Button, Group, Stack } from "@mantine/core";
 import { useTranslation } from "next-i18next";
 import React from "react";
-import {
-  BORDER_STYLE,
-  IFETableRowColumnProps,
-  NO_BORDER_STYLE,
-  THead,
-  TableAction,
-} from "./table.component";
+import { BORDER_STYLE, IFETableRowColumnProps, NO_BORDER_STYLE, THead, TableAction } from "./table.component";
 import TableTdComponent from "./table-td.component";
 import { COLORS } from "@/constants/colors.contant";
 import { getUUID } from "@/utils/function.util";
@@ -21,13 +15,7 @@ interface ITableRowComponentProps {
   element: IFETableRowColumnProps;
 }
 
-const TableRowComponent: React.FC<ITableRowComponentProps> = ({
-  isLast,
-  actions,
-  heads,
-  rowIdx,
-  element,
-}) => {
+const TableRowComponent: React.FC<ITableRowComponentProps> = ({ isLast, actions, heads, rowIdx, element }) => {
   const { t } = useTranslation();
 
   const valDup = {};
@@ -42,17 +30,7 @@ const TableRowComponent: React.FC<ITableRowComponentProps> = ({
       {heads.map((head, headIdx) => {
         const value = element[head.rowKey];
         let key = value + "" + getUUID();
-        return (
-          <TableTdComponent
-            width={head.width}
-            key={key}
-            isFirstCol={headIdx === 0}
-            isHaveAction={!!actions?.length}
-            isLastRow={isLast}
-            textAlign={head.rowTextAlign}
-            value={value}
-          />
-        );
+        return <TableTdComponent width={head.width} key={key} isFirstCol={headIdx === 0} isHaveAction={!!actions?.length} isLastRow={isLast} textAlign={head.rowTextAlign} value={value} />;
       })}
 
       {/* Action column exist if there action */}
@@ -72,27 +50,16 @@ const TableRowComponent: React.FC<ITableRowComponentProps> = ({
 
               const Wrapper: any = action.isLink ? Link : Stack;
 
-              console.log("Wrapper: ", Wrapper);
               return (
-                <Wrapper
-                  key={action.label}
-                  href={action.href && action.href(element)}
-                >
+                <Wrapper key={action.label} href={action.href && action.href(element)}>
                   <Button
-                    loading={
-                      !!action.isLoading ? action.isLoading(element) : false
-                    }
+                    loading={!!action.isLoading ? action.isLoading(element) : false}
                     style={{
                       background: action.buttonBackground,
                     }}
                     onClick={() => action.onClick && action.onClick(element)}
                   >
-                    {!!Icon && (
-                      <Icon
-                        fill={COLORS.WHITE}
-                        style={{ marginRight: ".5rem" }}
-                      />
-                    )}
+                    {!!Icon && <Icon fill={COLORS.WHITE} style={{ marginRight: ".5rem" }} />}
                     <span>{t(action.label)}</span>
                   </Button>
                 </Wrapper>

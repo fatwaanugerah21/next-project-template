@@ -29,18 +29,10 @@ export async function apiPostResponsiblers(responsiblers: TResponsibler[]) {
   return data;
 }
 
-export async function apiGetResponsiblers({
-  districtName,
-  subdistrictName,
-  votingPlaceNumber,
-}: {
-  districtName: string;
-  subdistrictName: string;
-  votingPlaceNumber?: string;
-}) {
+export async function apiGetResponsiblers({ districtName, subdistrictName, votingPlaceNumber }: { districtName: string; subdistrictName: string; votingPlaceNumber?: string }) {
   let url = formatUrl(endpoint);
 
-  if (!!districtName || !!subdistrictName || !!votingPlaceNumber) {
+  if (!!districtName || !!subdistrictName) {
     url += "?";
   }
 
@@ -66,18 +58,10 @@ export async function apiGetResponsiblers({
   return data;
 }
 
-export async function apiGetResponsiblersWithVoters({
-  districtName,
-  subdistrictName,
-  votingPlaceNumber,
-}: {
-  districtName: string;
-  subdistrictName: string;
-  votingPlaceNumber?: string;
-}) {
+export async function apiGetResponsiblersWithVoters({ districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters }: { districtName?: string; subdistrictName?: string; isKipOnly?: boolean; votingPlaceNumber?: string; maximumVoters?: string }) {
   let url = `${formatUrl(endpoint)}/with-voters`;
 
-  if (!!districtName) {
+  if (!!districtName || !!isKipOnly || !!maximumVoters) {
     url += "?";
   }
 
@@ -90,6 +74,14 @@ export async function apiGetResponsiblersWithVoters({
   if (!!votingPlaceNumber) {
     url += `votingPlaceNumber=${votingPlaceNumber}&`;
   }
+  if (!!isKipOnly) {
+    url += `isKipOnly=${isKipOnly}&`;
+  }
+  if (!!maximumVoters) {
+    url += `maximumVoters=${maximumVoters}&`;
+  }
+
+  console.log("URL: ", url);
 
   const resp = await fetch(url, {
     method: "GET",
