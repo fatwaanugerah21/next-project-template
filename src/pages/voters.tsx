@@ -1,26 +1,11 @@
 import { apiGetDistricts } from "@/apis/district.api";
-import {
-  apiCreateResponsiblerVoter,
-  apiDeleteResponsiblerVoters,
-  apiGetResponsiblerVoters,
-} from "@/apis/responsibler-voter.api";
+import { apiCreateResponsiblerVoter, apiDeleteResponsiblerVoters, apiGetResponsiblerVoters } from "@/apis/responsibler-voter.api";
 import { apiGetResponsiblers } from "@/apis/responsibler.api";
 import { apiGetSubdistricts } from "@/apis/subdistrict.api";
 import { apiGetVoters } from "@/apis/voter.api";
 import MainLayout from "@/layouts/main.layout";
 import Swal from "sweetalert2";
-import {
-  Button,
-  Card,
-  Group,
-  Input,
-  Loader,
-  Select,
-  Space,
-  Stack,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Button, Card, Group, Input, Loader, Select, Space, Stack, TextInput, Title } from "@mantine/core";
 import React, { useEffect, useRef, useState } from "react";
 import { QueryClient, useMutation, useQuery } from "react-query";
 import Link from "next/link";
@@ -32,16 +17,10 @@ const queryClient = new QueryClient();
 
 const VotersPage: React.FC<IVotersPageProps> = ({}) => {
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
-  const [selectedSubdistrict, setSelectedSubdistrict] = useState<string | null>(
-    null
-  );
-  const [votingPlaceNumber, setVotingPlaceNumber] = useState<string | null>(
-    null
-  );
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState<string | null>(null);
+  const [votingPlaceNumber, setVotingPlaceNumber] = useState<string | null>(null);
   const [selectedVoter, setSelectedVoter] = useState<string | null>(null);
-  const [selectedResponsibler, setSelectedResponsibler] = useState<
-    string | null
-  >(null);
+  const [selectedResponsibler, setSelectedResponsibler] = useState<string | null>(null);
 
   useEffect(() => {
     refetchResponsiblerVoters();
@@ -117,7 +96,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
 
   const responsiblersData = responsiblers?.data.map((r: any) => ({
     value: r.id + "",
-    label: `${r.name} - ${r.status} - ${r.coordinatorName} - TPS ${r.vottingPlaceNumber} ${r.subdistrictName} - Terinput ${r.realVoter} Suara`,
+    label: `${r.name} - ${r.status} - ${r.coordinatorName} - TPS ${r.vottingPlaceNumber} ${r.subdistrictName} - Terinput ${r.realVoter} Suara ${r.isKip ? "(KIP)" : ""}`,
   }));
 
   const { mutate, isLoading: isCreatingRV } = useMutation({
@@ -179,11 +158,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
     <MainLayout>
       <Title>Input Data Pemilih</Title>
 
-      <Stack
-        p={"md"}
-        style={{ border: "solid 1px #F0F0F0", borderRadius: "1rem" }}
-        mt={12}
-      >
+      <Stack p={"md"} style={{ border: "solid 1px #F0F0F0", borderRadius: "1rem" }} mt={12}>
         <Group grow>
           <Select
             label="Pilih Kecamatan"
@@ -237,11 +212,7 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
         />
       </Stack>
 
-      <Stack
-        p={"md"}
-        style={{ border: "solid 1px #F0F0F0", borderRadius: "1rem" }}
-        mt={16}
-      >
+      <Stack p={"md"} style={{ border: "solid 1px #F0F0F0", borderRadius: "1rem" }} mt={16}>
         <Title size={20}>Daftar Pemilih</Title>
         <Button w={"fit-content"} my={0} onClick={handleRefreshVotersList}>
           Refresh List Pemilih &#x21bb;
@@ -259,50 +230,27 @@ const VotersPage: React.FC<IVotersPageProps> = ({}) => {
             searchable
             disabled={isLoadingVoters}
           />
-          <Button
-            disabled={!selectedVoter || !selectedResponsibler}
-            loading={isCreatingRV}
-            mt={12}
-            w={"100%"}
-            type="submit"
-          >
+          <Button disabled={!selectedVoter || !selectedResponsibler} loading={isCreatingRV} mt={12} w={"100%"} type="submit">
             Tambah
           </Button>
         </FormComponent>
 
         <Stack>
-          <Button
-            w={"10rem"}
-            variant="outline"
-            onClick={() => refetchResponsiblerVoters()}
-          >
+          <Button w={"10rem"} variant="outline" onClick={() => refetchResponsiblerVoters()}>
             Refresh &#x21bb;
           </Button>
           {isFetchingResponsiblerVoters ? (
             <Loader />
           ) : (
             <Stack>
-              <Title size={"sm"}>
-                Jumlah Pemilih ({responsiblerVoters?.data?.length} Orang)
-              </Title>
+              <Title size={"sm"}>Jumlah Pemilih ({responsiblerVoters?.data?.length} Orang)</Title>
               {responsiblerVoters?.data.map((rv: any) => (
-                <Group
-                  key={
-                    rv.voter.name + rv.voter.individualCardNumber + "voterre"
-                  }
-                >
+                <Group key={rv.voter.name + rv.voter.individualCardNumber + "voterre"}>
                   <Title size={12}>
-                    - {rv.voter.name} - {rv.voter.birthPlace},{" "}
-                    {rv.voter.birthDate} - {rv.voter.districtName} -{" "}
-                    {rv.voter.subdistrictName} - TPS{" "}
-                    {rv.voter.pollingPlaceNumber}
+                    - {rv.voter.name} - {rv.voter.birthPlace}, {rv.voter.birthDate} - {rv.voter.districtName} - {rv.voter.subdistrictName} - TPS {rv.voter.pollingPlaceNumber} - ({rv.voter.individualCardNumber})
                   </Title>
 
-                  <Button
-                    size="xs"
-                    p={4}
-                    onClick={() => deleteResponsiblerVoter(rv)}
-                  >
+                  <Button size="xs" p={4} onClick={() => deleteResponsiblerVoter(rv)}>
                     Hapus &#10005;
                   </Button>
                 </Group>
