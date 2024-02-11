@@ -1,10 +1,7 @@
 import { apiGetResponsiblerVoters } from "@/apis/responsibler-voter.api";
 import { apiGetDetailResponsibler } from "@/apis/responsibler.api";
 import ExportToExcelButton from "@/components/export-to-excel.component";
-import TableComponent, {
-  IFETableRowColumnProps,
-  THead,
-} from "@/components/table/table.component";
+import TableComponent, { IFETableRowColumnProps, THead } from "@/components/table/table.component";
 import { Button, Stack, Table, Title } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -82,32 +79,27 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
     },
   ];
 
-  const elements: IFETableRowColumnProps[] = responsiblerVoters?.data?.map(
-    (rv: any, idx: number) => {
-      const rd = rv.voter;
-      const d = {
-        id: rd?.id + rd?.individualCardNumber + rd?.name + "voter-vr" + idx,
-        number: idx + 1,
-        familyCardNumber: rd?.familyCardNumber?.replace("undefined", "-") || "",
-        individualCardNumber:
-          rd?.individualCardNumber?.replace("undefined", "-") || "",
-        address: rd?.address,
-        name: rd?.name?.replace("undefined", "-") || "",
-        district: rd?.districtName,
-        subdistrict: rd?.subdistrictName,
-        votingPlaceNumber: rd?.pollingPlaceNumber,
-      };
-      return d;
-    }
-  );
+  const elements: IFETableRowColumnProps[] = responsiblerVoters?.data?.map((rv: any, idx: number) => {
+    const rd = rv.voter;
+    const d = {
+      id: rd?.id + rd?.individualCardNumber + rd?.name + "voter-vr" + idx,
+      number: idx + 1,
+      familyCardNumber: rd?.familyCardNumber?.replace("undefined", "-") || "",
+      individualCardNumber: rd?.individualCardNumber?.replace("undefined", "-") || "",
+      address: rd?.address,
+      name: rd?.name?.replace("undefined", "-") || "",
+      district: rd?.districtName,
+      subdistrict: rd?.subdistrictName,
+      votingPlaceNumber: rd?.pollingPlaceNumber,
+    };
+    return d;
+  });
 
   return (
     <Stack p={"lg"}>
       <Title mt={16} align="center">
-        Daftar Pemilih yang ditangani `{responsiblerDetail?.data?.name} -{" "}
-        {responsiblerDetail?.data?.coordinatorName}
-        {responsiblerDetail?.data?.isKip ? " (KIP) " : ""}` ({elements?.length}{" "}
-        Orang)
+        Daftar Pemilih yang ditangani `{responsiblerDetail?.data?.name} - {responsiblerDetail?.data?.coordinatorName}
+        {responsiblerDetail?.data?.isKip ? " (KIP) " : ""}` ({elements?.length} Orang)
       </Title>
       <ExportToExcelButton
         data={elements?.map((m, idx) => ({
@@ -118,23 +110,14 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
           Kelurahan: m.subdistrict,
           TPS: `TPS ${m.votingPlaceNumber}`,
         }))}
-        filename={`(${process.env.NEXT_PUBLIC_API_TARGET_TYPE}) DPT Untuk ${responsiblerDetail?.data?.name} - ${responsiblerDetail?.data?.coordinatorName}`}
+        filename={`(${process.env.NEXT_PUBLIC_API_TARGET_TYPE}) DPT Untuk ${responsiblerDetail?.data?.name} - ${responsiblerDetail?.data.isKip ? "Pak Nuzul" : responsiblerDetail?.data?.coordinatorName}`}
         sheetname="List Pemilih"
         heading={{
           good1: " ",
-          good2: " ",
-          title: `Daftar Pemilih yang ditangani ${
-            responsiblerDetail?.data?.name
-          } - ${responsiblerDetail?.data?.coordinatorName} ${
-            responsiblerDetail?.data?.isKip ? " (KIP) " : ""
-          }(${elements?.length} Orang)`,
+          title: `Daftar Pemilih yang ditangani ${responsiblerDetail?.data?.name} - ${responsiblerDetail?.data?.coordinatorName} ${responsiblerDetail?.data?.isKip ? " (KIP) " : ""}(${elements?.length} Orang)`,
         }}
       />
-      <TableComponent
-        emptyLabel="Tidak Ada Data"
-        elements={elements}
-        heads={heads}
-      />
+      <TableComponent emptyLabel="Tidak Ada Data" elements={elements} heads={heads} />
       <Stack mt={10}>
         <Link href={"/check-list-voters"}>
           <Button w={"100%"}>Kembali ke Daftar List Pemilih</Button>
