@@ -2,13 +2,7 @@ import { formatUrl, getHeaders } from "./index.api";
 
 const endpoint = "/responsibler-voters";
 
-export async function apiCreateResponsiblerVoter({
-  responsiblerId,
-  voterId,
-}: {
-  responsiblerId: number;
-  voterId: number;
-}) {
+export async function apiCreateResponsiblerVoter({ responsiblerId, voterId }: { responsiblerId: number; voterId: number }) {
   const resp = await fetch(formatUrl(endpoint), {
     method: "POST",
     headers: getHeaders(),
@@ -57,9 +51,7 @@ export async function apiGetTotalResponsiblerVoters() {
   }
 }
 
-export async function apiGetTotalResponsiblerVotersPerSubdistrict(
-  subdistrictName: string
-) {
+export async function apiGetTotalResponsiblerVotersPerSubdistrict(subdistrictName: string) {
   try {
     let url = `${formatUrl(endpoint)}/total/${subdistrictName}`;
 
@@ -76,9 +68,7 @@ export async function apiGetTotalResponsiblerVotersPerSubdistrict(
   }
 }
 
-export async function apiGetResponsiblerVoters(params: {
-  responsiblerId: number;
-}) {
+export async function apiGetResponsiblerVoters(params: { responsiblerId: number }) {
   try {
     if (!params.responsiblerId) throw "";
 
@@ -114,9 +104,9 @@ export async function apiDeleteResponsiblerVoters(rvId: number) {
   }
 }
 
-export async function apiGetResponsiblerVotersDuplicate() {
+export async function apiGetResponsiblerVotersDuplicate(subdistrictName?: string) {
   try {
-    let url = `${formatUrl(endpoint)}/all-duplicate`;
+    let url = `${formatUrl(endpoint)}/all-duplicate?subdistrictName=${subdistrictName || ""}`;
 
     const resp = await fetch(url, {
       method: "GET",
