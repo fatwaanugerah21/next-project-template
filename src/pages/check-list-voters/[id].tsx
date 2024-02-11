@@ -114,7 +114,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
         sheetname="List Pemilih"
         heading={{
           good1: " ",
-          title: `Daftar Pemilih yang ditangani ${responsiblerDetail?.data?.name} - ${responsiblerDetail?.data?.coordinatorName} ${responsiblerDetail?.data?.isKip ? " (KIP) " : ""}(${elements?.length} Orang)`,
+          title: `Daftar Pemilih yang ditangani ${responsiblerDetail?.data?.name} - ${responsiblerDetail?.data.isKip ? "Pak Nuzul" : responsiblerDetail?.data?.coordinatorName} ${responsiblerDetail?.data?.isKip ? " (KIP) " : ""}(${elements?.length} Orang)`,
         }}
       />
       <TableComponent emptyLabel="Tidak Ada Data" elements={elements} heads={heads} />
