@@ -21,6 +21,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
   const [selectedSubdistrict, setSelectedSubdistrict] = useState<string>("");
   const [selectedTps, setSelectedTps] = useState<string>("");
   const [maximumVoters, setMaximumVoters] = useState<string>("");
+  const [coordinatorName, setCoordinatorName] = useState<string>("");
   const [isKipOnly, setIsKipOnly] = useState<boolean>(false);
 
   const { data: inputtedDistrictsAndSubdistricts } = useQuery({
@@ -51,6 +52,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
         votingPlaceNumber: selectedTps,
         isKipOnly: isKipOnly,
         maximumVoters,
+        coordinatorName,
       }),
     enabled: !!selectedDistrict,
   });
@@ -299,6 +301,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
           <Group>
             <Switch value={isKipOnly + ""} onChange={(e) => setIsKipOnly(e.target.checked)} label="KIP" />
             <TextInput type="number" label="Maximum Yang ditangani" value={maximumVoters} onChange={(e) => setMaximumVoters(e.target.value)} />
+            <TextInput label="Nama Koordinator" value={coordinatorName} onChange={(e) => setCoordinatorName(e.target.value)} />
           </Group>
         </Stack>
 

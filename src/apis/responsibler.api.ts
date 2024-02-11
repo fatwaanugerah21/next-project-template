@@ -58,10 +58,10 @@ export async function apiGetResponsiblers({ districtName, subdistrictName, votin
   return data;
 }
 
-export async function apiGetResponsiblersWithVoters({ districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters }: { districtName?: string; subdistrictName?: string; isKipOnly?: boolean; votingPlaceNumber?: string; maximumVoters?: string }) {
+export async function apiGetResponsiblersWithVoters({ districtName, subdistrictName, votingPlaceNumber, isKipOnly, maximumVoters, coordinatorName }: { districtName?: string; subdistrictName?: string; isKipOnly?: boolean; votingPlaceNumber?: string; maximumVoters?: string; coordinatorName?: string }) {
   let url = `${formatUrl(endpoint)}/with-voters`;
 
-  if (!!districtName || !!isKipOnly || !!maximumVoters) {
+  if (!!districtName || !!isKipOnly || !!maximumVoters || !!coordinatorName) {
     url += "?";
   }
 
@@ -79,6 +79,9 @@ export async function apiGetResponsiblersWithVoters({ districtName, subdistrictN
   }
   if (!!maximumVoters) {
     url += `maximumVoters=${maximumVoters}&`;
+  }
+  if (!!coordinatorName) {
+    url += `coordinatorName=${coordinatorName}&`;
   }
 
   console.log("URL: ", url);

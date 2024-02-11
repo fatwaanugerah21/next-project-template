@@ -91,6 +91,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
       district: rd?.districtName,
       subdistrict: rd?.subdistrictName,
       votingPlaceNumber: rd?.pollingPlaceNumber,
+      isDuplicate: rd?.isDuplicate,
     };
     return d;
   });
@@ -102,14 +103,17 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
         {responsiblerDetail?.data?.isKip ? " (KIP) " : ""}` ({elements?.length} Orang)
       </Title>
       <ExportToExcelButton
-        data={elements?.map((m, idx) => ({
-          No: idx + 1,
-          "Nama Pemilih": m.name,
-          Alamat: m.address,
-          Kecamatan: m.district,
-          Kelurahan: m.subdistrict,
-          TPS: `TPS ${m.votingPlaceNumber}`,
-        }))}
+        data={elements?.map((m: any, idx) => {
+          return {
+            No: idx + 1,
+            "Nama Pemilih": m.name,
+            Alamat: m.address,
+            Kecamatan: m.district,
+            Kelurahan: m.subdistrict,
+            TPS: `TPS ${m.votingPlaceNumber}`,
+            isDuplicate: m.isDuplicate,
+          };
+        })}
         filename={`(${process.env.NEXT_PUBLIC_API_TARGET_TYPE}) DPT Untuk ${responsiblerDetail?.data?.name} - ${responsiblerDetail?.data.isKip ? "Pak Nuzul" : responsiblerDetail?.data?.coordinatorName}`}
         sheetname="List Pemilih"
         heading={{

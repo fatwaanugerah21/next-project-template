@@ -1,6 +1,7 @@
 import React from "react";
 import * as ExcelJS from "exceljs";
 import { Button } from "@mantine/core";
+import { COLORS } from "@/constants/colors.contant";
 
 interface ExportToExcelButtonProps {
   data: any[]; // Replace 'any' with the type of your data objects
@@ -12,12 +13,7 @@ interface ExportToExcelButtonProps {
 const defaultColumnWidth = 35; // Default column width in rem
 const defaultFontSize = 9; // Default font size
 
-const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({
-  data,
-  filename,
-  sheetname,
-  heading,
-}) => {
+const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({ data, filename, sheetname, heading }) => {
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(sheetname || "Sheet1");
@@ -57,10 +53,7 @@ const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({
     if (heading) {
       worksheet.insertRow(1, []);
       const headerRow = worksheet.insertRow(1, Object.values(heading));
-      const targetRow = worksheet.insertRow(
-        1,
-        Object.values([" ", process.env.NEXT_PUBLIC_TARGET])
-      );
+      const targetRow = worksheet.insertRow(1, Object.values([" ", process.env.NEXT_PUBLIC_TARGET]));
       headerRow.font = { size: 16, bold: true }; // Adjust the font size as needed
       targetRow.font = { size: 14, bold: true }; // Adjust the font size as needed
     }
@@ -68,6 +61,7 @@ const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({
     // Add data to the worksheet
     data.forEach((rowData) => {
       const row = worksheet.addRow(Object.values(rowData));
+      console.log("rowData: ", rowData);
       // Set border for each cell in the row
       row.eachCell((cell) => {
         cell.border = {
@@ -77,6 +71,14 @@ const ExportToExcelButton: React.FC<ExportToExcelButtonProps> = ({
           right: { style: "thin" },
         };
       });
+
+      if (rowData.isDuplicate) {
+        row.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF0000" }, // Red color code
+        };
+      }
     });
 
     // Save the workbook as a file
