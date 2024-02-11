@@ -50,11 +50,9 @@ const CheckDuplicate: React.FC<ICheckDuplicateProps> = ({}) => {
     }
   });
 
-  console.log("subdistrictDuplicates: ", subdistrictDuplicates);
-
   return (
     <MainLayout>
-      <Title align="center">Daftar Pemilih Yang Duplikat ({duplicates?.data?.length} Orang)</Title>
+      <Title align="center">Total Daftar Pemilih Yang Duplikat ({duplicates?.data?.length} Orang)</Title>
 
       <Stack p={"md"} style={{ border: "solid 1px #F0F0F0", borderRadius: "1rem" }} mt={16}>
         {!!isLoading ? (
@@ -64,7 +62,7 @@ const CheckDuplicate: React.FC<ICheckDuplicateProps> = ({}) => {
             return (
               <Group key={`subdistrict-duplicte-${subdistrictName}`}>
                 <Text>
-                  {subdistrictName} : {(subdistrictDuplicates as any)[subdistrictName]}
+                  {subdistrictName} : {(subdistrictDuplicates as any)[subdistrictName]} Orang
                 </Text>
 
                 <Link href={`/check-duplicate/${subdistrictName}`}>
