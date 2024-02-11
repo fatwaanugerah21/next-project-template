@@ -98,7 +98,7 @@ const CheckListVoter: React.FC<ICheckListVoterProps> = ({}) => {
   return (
     <Stack p={"lg"}>
       <Title mt={16} align="center">
-        Daftar Pemilih yang ditangani `{responsiblerDetail?.data?.name} - {responsiblerDetail?.data?.coordinatorName}
+        Daftar Pemilih yang ditangani `{responsiblerDetail?.data?.name} - {responsiblerDetail?.data.isKip ? "Pak Nuzul" : responsiblerDetail?.data?.coordinatorName}
         {responsiblerDetail?.data?.isKip ? " (KIP) " : ""}` ({elements?.length} Orang)
       </Title>
       <ExportToExcelButton
