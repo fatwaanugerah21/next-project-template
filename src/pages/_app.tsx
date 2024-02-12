@@ -21,6 +21,59 @@ const queryClient = new QueryClient();
 function App(props: AppProps) {
   const { Component, pageProps } = props;
 
+  const inputtedPassword = useRef("");
+
+  const [isValid, setIsValid] = useState(false);
+
+  async function validateUser() {
+    const data = await apiGetPassword();
+    const password = data?.data;
+
+    if (inputtedPassword.current === password) {
+      return;
+    }
+
+    const { value } = await Swal.fire({
+      icon: "info",
+      title: "Validasi diri anda",
+      text: "Masukkan password",
+      input: "password",
+    });
+    console.log("Value: ", value);
+    inputtedPassword.current = value;
+    console.log("Inputted Password: ", inputtedPassword);
+    if (value !== password) {
+      await Swal.fire({
+        icon: "error",
+        title: "Password Salah",
+        text: "Password yang anda masukkan salah, silahkan refresh halaman dan input password lagi",
+      });
+      setIsValid(false);
+    } else {
+      setIsValid(true);
+    }
+  }
+
+  useEffect(() => {
+    async function start() {
+      while (true) {
+        await validateUser();
+
+        await waitForSeconds(5);
+      }
+    }
+
+    start();
+  }, []);
+
+  if (!isValid) {
+    return (
+      <Group h={"100%"} align="center" position="center">
+        <Title align="center">Silahkan Refresh Halaman ini dan masukkan password</Title>
+      </Group>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider withGlobalStyles withNormalizeCSS theme={mantineProviderTheme}>
